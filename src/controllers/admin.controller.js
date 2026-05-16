@@ -6,7 +6,7 @@ export const getFullControl = async (req, res) => {
         const todos = await adminService.getAllTodos();
         res.json({ users, todos });
     } catch (error) {
-        res.status(500).json({ message: "Ошибка доступа к данным" });
+        res.status(500).json({ message: "Ошибка доступа к данным" }); 
     }
 };
 

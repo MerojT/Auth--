@@ -6,9 +6,8 @@ export const checkUserExists = async (username) => {
 
 export const createNewUser = async (userData) => {
     const user = await authRepo.createUser(userData);
-    const userObj = user.toObject();
-    delete userObj.password;
-    return userObj;
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
 };
 
 export const getUserFullInfo = async (id) => {
@@ -19,3 +18,10 @@ export const loginUser = async (username) => {
     return await authRepo.findUserByUsername(username);
 };
 
+export const updateRefreshToken = async (userId, token) => {
+  return await authRepo.updateRefreshToken(userId, token);
+};
+
+export const findUserByToken = async (token) => {
+  return await authRepo.findUserByRefreshToken(token);
+};

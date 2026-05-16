@@ -1,18 +1,31 @@
-import User from '../models/user.model.js';
-import Todo from '../models/todo.model.js';
+import { AppDataSource } from "../config/data-source.js";
+import { UserEntity } from "../Entities/user.entity.js";
+import { TodoEntity } from "../Entities/todo.entity.js";
+
+const userRepo = AppDataSource.getRepository(UserEntity);
+const todoRepo = AppDataSource.getRepository(TodoEntity);
 
 export const findAllUsers = async () => {
-    return await User.find().select('-password');
+    return await userRepo.find({
+        select: ["id", "username", "role"]
+    });
 };
 
 export const updateUser = async (userId, updateData) => {
-    return await User.findByIdAndUpdate(userId, updateData, { new: true });
+    await userRepo.update(userId, updateData);
+    return await userRepo.findOneBy({ id: userId });
 };
 
 export const findAllTodos = async () => {
-    return await Todo.find().populate('userId', 'username');
+    return await todoRepo.find({
+        relations: ["user"] 
+    });
 };
 
 export const deleteUser = async (userId) => {
-    return await User.findByIdAndDelete(userId);
+    const user = await userRepo.findOneBy({ id: userId });
+    if (user) {
+        return await userRepo.remove(user);
+    }
+    return null;
 };

@@ -1,34 +1,42 @@
-import * as todoService from '../services/todo.service.js';
+import * as todoService from "../services/todo.service.js";
 
-export const createTodo = async (req, res) => {
+export const getTodos = async (req, res, next) => {
     try {
-        const newTodo = await todoService.addTask({
-            ...req.body,
-            userId: req.user.id
-        });
-        res.status(201).json(newTodo);
-    } catch (error) {
-        res.status(500).json({ message: "Ошибка создания задачи" });
-    }
-};
-
-export const getMyTodos = async (req, res) => {
-    try {
-        const todos = await todoService.getUserTasks(req.user.id);
+        const todos = await todoService.getTodos(req.user.id);
         res.json(todos);
     } catch (error) {
-        res.status(500).json({ message: "Ошибка получения списка" });
+        next(error);
     }
 };
 
-export const deleteTodo = async (req, res) => {
+export const getTodo = async (req, res, next) => {
     try {
-        const todo = await todoService.removeTask(req.params.id, req.user.id);
-        if (!todo) {
-            return res.status(404).json({ message: "Задача не найдена" });
-        }
-        res.json({ message: "Удалено" });
+        const todo = await todoService.getTodo(Number(req.params.id), req.user.id);
+        if (!todo) return res.status(404).json({ message: "Задача не найдена" });
+        res.json(todo);
     } catch (error) {
-        res.status(500).json({ message: "Ошибка удаления" });
+        next(error);
+    }
+};
+
+export const createTodo = async (req, res, next) => {
+    try {
+        const todo = await todoService.createTodo({
+            ...req.body,
+            user: { id: req.user.id }
+        });
+        res.status(201).json(todo);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const deleteTodo = async (req, res, next) => {
+    try {
+        const todo = await todoService.deleteTodo(Number(req.params.id), req.user.id);
+        if (!todo) return res.status(404).json({ message: "Задача не найдена или нет доступа" });
+        res.json({ message: "Удалено", todo });
+    } catch (error) {
+        next(error);
     }
 };
