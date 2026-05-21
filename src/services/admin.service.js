@@ -15,3 +15,15 @@ export const changeRole = async (userId, role) => {
 export const removeUserAccount = async (userId) => {
     return await adminRepo.deleteUser(userId);
 };
+
+export const deleteTodo = async (todoId) => {
+    return adminRepo.deleteTodo(todoId)
+}
+  
+export const createTodo = async (userId, todoData) => {
+    return adminRepo.createTodo(userId, todoData)
+}
+  
+export const updateTodo = async (todoId, todoData) => {
+    return adminRepo.updateTodo(todoId, todoData)
+}
